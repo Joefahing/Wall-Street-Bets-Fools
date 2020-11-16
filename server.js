@@ -1,6 +1,7 @@
 const express = require('express');
 const Snoowrap = require('snoowrap');
 const config = require('./config');
+const symbols = require('./symbols');
 
 const app = express();
 
@@ -34,6 +35,10 @@ app.get('/wsb', (req, res) => {
             res.send(post);
         });
 });
+
+app.get('/symbols', (req, res) => {
+    symbols.then(result => res.send(result));
+})
 
 app.listen(3000, () => {
     console.log('listening to port 3000')
