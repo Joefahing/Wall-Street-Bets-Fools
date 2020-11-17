@@ -7,29 +7,29 @@ const nyse_csv = path.join(__dirname, 'assets', 'NYSE.csv');
 
 
 function getAllStockSymbol() {
-    const chunks = []
+    const stocks = []
 
     return new Promise((resolve, reject) => {
         fs.createReadStream(nasdaq_csv)
             .pipe(csv.parse({ headers: true }))
-            .on('data', (chunk) => {
-                chunks.push({
-                    Symbol: chunk.Symbol,
-                    Name: chunk.Name,
-                    Sector: chunk.Sector
+            .on('data', (stock_data) => {
+                stock_datas.push({
+                    Symbol: stock_data.Symbol,
+                    Name: stock_data.Name,
+                    Sector: stock_data.Sector
                 });
             })
             .on('end', () => {
                 fs.createReadStream(nyse_csv)
                     .pipe(csv.parse({ headers: true }))
-                    .on('data', (chunk) => {
-                        chunks.push({
-                            Symbol: chunk.Symbol,
-                            Name: chunk.Name,
-                            Sector: chunk.Sector
+                    .on('data', (stock_data) => {
+                        stock_datas.push({
+                            Symbol: stock_data.Symbol,
+                            Name: stock_data.Name,
+                            Sector: stock_data.Sector
                         });
                     })
-                    .on('end', () => resolve(chunks))
+                    .on('end', () => resolve(stocks))
             })
     })
 }
