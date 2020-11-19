@@ -3,8 +3,6 @@ const symbols = require('./symbols');
 
 const app = express();
 
-const wsb = r.getSubreddit('wallstreetbets');
-
 app.get('/', (req, res) => {
     res.send('Wall Street Bets Data I am coming');
 });
