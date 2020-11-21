@@ -1,4 +1,3 @@
-const { raw } = require('express');
 const Snoowrap = require('snoowrap');
 const config = require('../config');
 const PostSchema = require('../models/post');
