@@ -6,8 +6,8 @@ const mongoose = require('./dbhelper').mongoose;
 const StockSchema = require('../models/stock');
 const Stock = mongoose.model('Stock', StockSchema);
 
-const nasdaq_csv = path.join('/Users/joefacao/Desktop/Express/ProjectRedditFools', 'assets', 'NASDAQ.csv');
-const nyse_csv = path.join('/Users/joefacao/Desktop/Express/ProjectRedditFools', 'assets', 'NYSE.csv');
+const nasdaq_csv = path.join(__dirname, '..', 'assets', 'NASDAQ.csv');
+const nyse_csv = path.join(__dirname, '..', 'assets', 'NYSE.csv');
 
 function getAllStockSymbolFromCSV() {
     const stocks = []
