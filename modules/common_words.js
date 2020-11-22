@@ -2,9 +2,6 @@ const fs = require('fs');
 const path = require('path');
 
 const common_word_file = path.join(__dirname, '..', 'assets', 'common_word.txt');
-// fs.createReadStream(common_word_file).on('data', (chunk) => {
-//     console.log(chunk.toString());
-// }).on('end', () => console.log('finish reading'));
 
 function getDataFromText() {
     let all_text = '';
@@ -32,7 +29,4 @@ async function getTopMostCommonWords(nth_common = 100) {
     }
 }
 
-module.exports = {
-    getTopMostCommonWords
-}
-//getDataFromText().then(result => console.log(result)).catch(error => console.log(error));
+module.exports.getTopMostCommonWords = getTopMostCommonWords;
