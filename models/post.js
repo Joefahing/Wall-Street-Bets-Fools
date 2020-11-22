@@ -6,8 +6,7 @@ const PostSchema = new Schema({
     flair: String,
     title: String,
     body: String,
-    symbol: String,
-    created_date: { type: Date, default: Date.now() },
+    date_created: { type: Date, default: new Date() },
 });
 
 module.exports = PostSchema;
