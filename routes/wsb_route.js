@@ -25,7 +25,7 @@ router.get('/gain_loss', async (req, res) => {
 });
 
 router.post('/add_post', async (req, res, next) => {
-    if (!req.body.search || Number.isInteger(parseInt(req.body.search))) {
+    if (!req.body.search || !Number.isInteger(parseInt(req.body.search))) {
         next({
             from: 'add_post'
         });
