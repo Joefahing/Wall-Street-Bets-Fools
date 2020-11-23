@@ -97,22 +97,33 @@ async function addPostAndStockPost(go_through = 100) {
     return output;
 }
 
+exports.addPostAndStockPost = addPostAndStockPost;
+
 async function getAllGainLossPost(date_of_search = new Date(1970, 1, 1)) {
     try {
         const post_result = await Post.find()
             .where('flair').in(['Gain', 'Loss'])
             .where('date_created').gte(date_of_search)
             .select('title flair date_created').exec();
-        return post_result;
+        return post_result.map(raw_result => {
+            return {
+                title: raw_result.title,
+                flair: raw_result.flair,
+                date_created: raw_result.date_created
+            }
+        });
     } catch (error) {
         console.log('Error occurred at getAllGainLossPost methods')
         throw error;
     }
 }
 
+exports.getAllGainLossPost = getAllGainLossPost;
+
 async function getAllPostPastDate(date_of_search = new Date(1970, 1, 1)) {
     const post_result = await Stock_Post.find()
         .where('date_created').gte(date_of_search)
+        .select('symbol flair date_created')
         .exec();
     return post_result;
 }
