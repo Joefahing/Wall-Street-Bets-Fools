@@ -1,6 +1,7 @@
 const express = require('express');
 const wsb_route = require('./routes/wsb_route');
 const body_parser = require('body-parser');
+const cron = require('./modules/cron');
 
 const app = express();
 
@@ -9,6 +10,8 @@ app.use('/stats', wsb_route);
 app.use(logError);
 app.use(invalidBodyPropertiesHandler);
 app.use(genericHandler);
+
+cron.startJobs();
 
 app.listen(3000, () => {
     console.log('listening to port 3000')
