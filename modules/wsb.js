@@ -1,14 +1,9 @@
 const Snoowrap = require('snoowrap');
 const config = require('../config');
-const PostSchema = require('../models/post');
-const StockSchema = require('../models/stock');
+const Post = require('../models/post');
+const Stock = require('../models/stock');
 const Stock_Post = require('../models/stock_post');
-const mongoose = require('./dbhelper').mongoose;
 const common_word = require('./common_words');
-const PastDate = require('./past_date');
-
-const Post = mongoose.model('Post', PostSchema);
-const Stock = mongoose.model('Stock', StockSchema);
 
 const r = new Snoowrap({
     userAgent: config.wsb_userAgent,
@@ -128,6 +123,7 @@ async function getAllPostPastDate(date_of_search = new Date(1970, 1, 1)) {
     return post_result;
 }
 
+exports.getAllPostPastDate = getAllPostPastDate;
 
 
 

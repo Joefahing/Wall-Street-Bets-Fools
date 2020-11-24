@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require('../modules/dbhelper').mongoose;
 const Schema = mongoose.Schema;
 
 const StockSchema = new Schema({
@@ -22,7 +22,7 @@ StockSchema.statics.updateVolumn = function (volumn = 0, symbol = '') {
     return this.updateOne({ symbol: symbol }, { volumn: volumn });
 }
 
-module.exports = StockSchema;
+module.exports = mongoose.model('Stock', StockSchema);
 
 
 
