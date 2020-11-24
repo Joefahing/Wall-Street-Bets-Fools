@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require('../modules/dbhelper').mongoose;
 const Schema = mongoose.Schema;
 
 const PostSchema = new Schema({
@@ -9,4 +9,17 @@ const PostSchema = new Schema({
     date_created: { type: Date, default: new Date() },
 });
 
-module.exports = PostSchema;
+async function addPost(id, flair = '', title, content = '') {
+
+    const newPost = new Post({
+        post_id: id,
+        title: title,
+        flair: flair,
+        body: content
+    });
+
+    return newPost.save();
+}
+
+
+module.exports = mongoose.model('Post', PostSchema);
