@@ -1,16 +1,15 @@
 const Snoowrap = require('snoowrap');
-const config = require('../config');
 const Post = require('../models/post');
 const Stock = require('../models/stock');
 const Stock_Post = require('../models/stock_post');
 const common_word = require('./common_words');
 
 const r = new Snoowrap({
-    userAgent: config.wsb_userAgent,
-    clientId: config.wsb_clientId,
-    clientSecret: config.wsb_clientSecret,
-    username: config.wsb_username,
-    password: config.wsb_password
+    userAgent: process.env.WSB_USER_AGENT,
+    clientId: process.env.WSB_CLIENT_ID,
+    clientSecret: process.env.WSB_CLIENT_SECRET,
+    username: process.env.REDDIT_USER_ID,
+    password: process.env.REDDIT_PASSWORD
 });
 
 const wsb = r.getSubreddit('wallstreetbets');
