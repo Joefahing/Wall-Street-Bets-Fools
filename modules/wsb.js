@@ -1,8 +1,10 @@
+const { query } = require('express');
 const Snoowrap = require('snoowrap');
 const Post = require('../models/post');
 const Stock = require('../models/stock');
 const Stock_Post = require('../models/stock_post');
 const common_word = require('./common_words');
+const PastTimestamp = require('./past_date');
 
 const r = new Snoowrap({
     userAgent: process.env.WSB_USER_AGENT,
@@ -91,18 +93,20 @@ async function addPostAndStockPost(go_through = 100) {
     return output;
 }
 
-exports.addPostAndStockPost = addPostAndStockPost;
 
-async function getAllGainLossPost(date_of_search = new Date(1970, 1, 1)) {
+async function getAllGainLossPost(start_date = new Date('1970-01-01'), end_date = new Date()) {
+
     try {
         const post_result = await Post.find()
             .where('flair').in(['Gain', 'Loss'])
-            .where('date_created').gte(date_of_search)
+            .where('date_created').gte(start_date)
+            .where('date_created').lt(end_date)
             .select('title flair date_created').exec();
         return post_result.map(raw_result => {
             return {
                 title: raw_result.title,
                 flair: raw_result.flair,
+                post_id: '',
                 date_created: raw_result.date_created
             }
         });
@@ -112,7 +116,102 @@ async function getAllGainLossPost(date_of_search = new Date(1970, 1, 1)) {
     }
 }
 
-exports.getAllGainLossPost = getAllGainLossPost;
+function totalGainLossOfPost(posts) {
+    const total = {
+        gain_total: 0,
+        loss_total: 0,
+        get index_total() {
+            return this.gain_total - this.loss_total;
+        }
+    }
+
+    for (post of posts) {
+        if (post.flair === 'Gain') total.gain_total++;
+        else total.loss_total++;
+    }
+
+    return total;
+}
+
+
+async function getGainLossSummary(summary_period = 'week') {
+    let current_interval_end_date = new Date();
+    let current_interval_start_date;
+    let previous_interval_end_date;
+    let previous_interval_start_date;
+    const pastBy = 1;
+
+    switch (summary_period) {
+        case 'day':
+            current_interval_start_date = PastTimestamp.pastDay();
+            previous_interval_end_date = PastTimestamp.pastDay(current_interval_end_date, pastBy);
+            previous_interval_start_date = PastTimestamp.pastDay(current_interval_start_date, pastBy);
+            break;
+
+        case 'week':
+            current_interval_start_date = PastTimestamp.pastWeek();
+            previous_interval_end_date = PastTimestamp.pastWeek(current_interval_end_date, pastBy);
+            previous_interval_start_date = PastTimestamp.pastWeek(current_interval_start_date, pastBy);
+            break;
+
+        case 'month':
+            current_interval_start_date = PastTimestamp.pastMonth();
+            previous_interval_end_date = PastTimestamp.pastMonth(current_interval_end_date, pastBy);
+            previous_interval_start_date = PastTimestamp.pastMonth(current_interval_start_date, pastBy);
+            break
+    }
+
+    const current_interval_posts = await getAllGainLossPost(current_interval_start_date, current_interval_end_date);
+    const previous_interval_posts = await getAllGainLossPost(previous_interval_start_date, previous_interval_end_date);
+
+    const current_posts_total = totalGainLossOfPost(current_interval_posts);
+    const previous_posts_total = totalGainLossOfPost(previous_interval_posts);
+
+    const postSummary = {
+        current_gain_loss_summary: current_posts_total,
+        previous_gain_loss_summary: previous_posts_total,
+        gain_post_growth_rate: growth_rate(current_posts_total.gain_total, previous_posts_total.gain_total),
+        loss_post_growth_rate: growth_rate(current_posts_total.loss_total, previous_posts_total.loss_total),
+        total_post_growth_rate: growth_rate(current_posts_total.index_total, previous_posts_total.index_total),
+        volatility: 0,
+    }
+
+    return postSummary;
+}
+
+function growth_rate(current_value, last_value) {
+    if (isNaN(current_value) || isNaN(last_value) || last_value === 0) return 0;
+
+    const growth_rate = ((current_value - last_value) / last_value);
+
+    return Number.parseFloat(growth_rate.toFixed(2));
+}
+
+async function getTopNStocks(top = 5) {
+    const query_result = await Stock_Post.aggregate([
+        {
+            $group: {
+                _id: {
+                    symbol: '$symbol'
+                },
+                noise: { $sum: 1 }
+            },
+        },
+        { $sort: { noise: -1 } },
+        { $limit: top },
+        {
+            $project: {
+                _id: 0,
+                symbol: '$_id.symbol',
+                noise: '$noise',
+            }
+        }
+    ]).exec();
+
+    console.log(query_result);
+    return query_result;
+}
+
 
 async function getAllPostPastDate(date_of_search = new Date(1970, 1, 1)) {
     const post_result = await Stock_Post.find()
@@ -122,7 +221,17 @@ async function getAllPostPastDate(date_of_search = new Date(1970, 1, 1)) {
     return post_result;
 }
 
+async function deleteStockPostBySymbol(symbol) {
+    const post_deleted = await Stock_Post.deleteMany({ "symbol": symbol });
+    return post_deleted;
+}
+
+exports.addPostAndStockPost = addPostAndStockPost;
+exports.getAllGainLossPost = getAllGainLossPost;
+exports.getGainLossSummary = getGainLossSummary;
 exports.getAllPostPastDate = getAllPostPastDate;
+exports.getTopNStocks = getTopNStocks;
+exports.deleteStockPostBySymbol = deleteStockPostBySymbol;
 
 
 
