@@ -13,7 +13,7 @@ class PastTimestamp {
     }
 
     static pastMonth(reference_date = new Date(), n_month = 1) {
-        const date = new Date(Date.parse(reference_date));
+         const date = new Date(Date.parse(reference_date));
         date.setMonth(date.getMonth() - n_month, date.getDate());
         return date;
     }
