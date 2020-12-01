@@ -1,8 +1,7 @@
-const { query } = require('express');
 const Snoowrap = require('snoowrap');
 const Post = require('../models/post');
 const Stock = require('../models/stock');
-const Stock_Post = require('../models/stock_post');
+const PostSymbol = require('../models/postsymbol');
 const common_word = require('./common_words');
 const PastTimestamp = require('./past_date');
 
@@ -58,12 +57,11 @@ async function addPost(id, flair = '', title, content = '') {
 
 async function addStock_Post(post_id, flair = '', symbol) {
 
-    const newPost = new Stock_Post({
+    const newPost = new PostSymbol({
         post_id: post_id,
         flair: flair,
         symbol: symbol
     });
-
     return newPost.save();
 }
 
@@ -190,7 +188,7 @@ function growth_rate(current_value, last_value) {
 }
 
 async function getTopNStocks(top = 5) {
-    const query_result = await Stock_Post.aggregate([
+    const query_result = await PostSymbol.aggregate([
         {
             $group: {
                 _id: {
@@ -210,13 +208,12 @@ async function getTopNStocks(top = 5) {
         }
     ]).exec();
 
-    console.log(query_result);
     return query_result;
 }
 
 
 async function getAllPostPastDate(date_of_search = new Date(1970, 1, 1)) {
-    const post_result = await Stock_Post.find()
+    const post_result = await PostSymbol.find()
         .where('date_created').gte(date_of_search)
         .select('symbol flair date_created')
         .exec();
@@ -224,7 +221,7 @@ async function getAllPostPastDate(date_of_search = new Date(1970, 1, 1)) {
 }
 
 async function deleteStockPostBySymbol(symbol) {
-    const post_deleted = await Stock_Post.deleteMany({ "symbol": symbol });
+    const post_deleted = await PostSymbol.deleteMany({ "symbol": symbol });
     return post_deleted;
 }
 
