@@ -1,7 +1,7 @@
 const Snoowrap = require('snoowrap');
 const Post = require('../models/post');
 const Stock = require('../models/stock');
-const PostSymbol = require('../models/stock_post');
+const PostSymbol = require('../models/postsymbol');
 const common_word = require('./common_words');
 const PastTimestamp = require('./past_date');
 

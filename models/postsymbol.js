@@ -50,5 +50,5 @@ PostSymbol_Schema.statics.findStockPostBySymbol = async function (symbol = 'AAPL
 }
 
 
-const Stock_Post = mongoose.model('Stock_Post', PostSymbol_Schema);
-module.exports = Stock_Post;
+const PostSymbol = mongoose.model('PostSymbol', PostSymbol_Schema);
+module.exports = PostSymbol;
