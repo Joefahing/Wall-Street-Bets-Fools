@@ -80,7 +80,6 @@ router.get('/gain_loss/post', async (req, res, next) => {
 
 router.get('/gain_loss/summary', async (req, res) => {
     const summary = await wsb.getGainLossSummary('week');
-    console.log(summary);
     res.status(200).json(summary);
 });
 
