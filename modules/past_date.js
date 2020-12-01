@@ -3,7 +3,7 @@ class PastTimestamp {
     static PastDay(reference_date = new Date(), n_days = 1) {
         const start_date = new Date(Date.parse(reference_date));
         start_date.setDate(start_date.getDate() - n_days);
-        return date;
+        return start_date;
     }
 
     static PastWeek(reference_date = new Date(), n_weeks = 1) {
