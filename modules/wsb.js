@@ -145,21 +145,21 @@ async function getGainLossSummary(summary_period = 'week') {
 
     switch (summary_period) {
         case 'day':
-            current_interval_start_date = PastTimestamp.pastDay();
-            previous_interval_end_date = PastTimestamp.pastDay(current_interval_end_date, pastBy);
-            previous_interval_start_date = PastTimestamp.pastDay(current_interval_start_date, pastBy);
+            current_interval_start_date = PastTimestamp.PastDay();
+            previous_interval_end_date = PastTimestamp.PastDay(current_interval_end_date, pastBy);
+            previous_interval_start_date = PastTimestamp.PastDay(current_interval_start_date, pastBy);
             break;
 
         case 'week':
-            current_interval_start_date = PastTimestamp.pastWeek();
-            previous_interval_end_date = PastTimestamp.pastWeek(current_interval_end_date, pastBy);
-            previous_interval_start_date = PastTimestamp.pastWeek(current_interval_start_date, pastBy);
+            current_interval_start_date = PastTimestamp.PastWeek();
+            previous_interval_end_date = PastTimestamp.PastWeek(current_interval_end_date, pastBy);
+            previous_interval_start_date = PastTimestamp.PastWeek(current_interval_start_date, pastBy);
             break;
 
         case 'month':
-            current_interval_start_date = PastTimestamp.pastMonth();
-            previous_interval_end_date = PastTimestamp.pastMonth(current_interval_end_date, pastBy);
-            previous_interval_start_date = PastTimestamp.pastMonth(current_interval_start_date, pastBy);
+            current_interval_start_date = PastTimestamp.PastMonth();
+            previous_interval_end_date = PastTimestamp.PastMonth(current_interval_end_date, pastBy);
+            previous_interval_start_date = PastTimestamp.PastMonth(current_interval_start_date, pastBy);
             break
     }
 
