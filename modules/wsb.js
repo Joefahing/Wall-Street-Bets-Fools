@@ -78,10 +78,12 @@ async function addPostAndStockPost(go_through = 100) {
     for (const raw_post of raw_posts) {
         const { id, flair, title, content } = raw_post
         const symbolsFromPost = getSymbolsFromTitle(title, symbol_dictionary, filter_word_set);
+        const number_stock_symbol = symbolsFromPost.length
 
         const postExists = await Post.exists({ post_id: id });
 
-        if (postExists || symbolsFromPost.length === 0) continue;
+        if (postExists) continue;
+        if (flair !== 'Gain' && flair !== 'Loss' && number_stock_symbol === 0) continue;
 
         const savedPost = await addPost(id, flair, title, content);
         output.push(savedPost);
