@@ -39,7 +39,7 @@ PostSymbol_Schema.statics.findTopNStocks = async function (top = 5) {
     return topStocks;
 }
 
-PostSymbol_Schema.statics.findStocPostkbySymbol = async function (symbol = 'AAPL') {
+PostSymbol_Schema.statics.findStockPostBySymbol = async function (symbol = 'AAPL') {
     const serialize_symbol = symbol.toUpperCase();
 
     const symbols = await this.find()
