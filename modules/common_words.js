@@ -19,7 +19,7 @@ function getDataFromText() {
     });
 }
 
-async function getTopMostCommonWords(nth_common = 100) {
+async function mostCommonWords(nth_common = 100) {
     try {
         const all_common_word = await getDataFromText();
         return nth_common >= all_common_word.length ? all_common_word.splice(0, all_common_word.length) : all_common_word.splice(0, nth_common);
@@ -29,4 +29,4 @@ async function getTopMostCommonWords(nth_common = 100) {
     }
 }
 
-module.exports.getTopMostCommonWords = getTopMostCommonWords;
+module.exports.mostCommonWords = mostCommonWords;
