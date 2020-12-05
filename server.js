@@ -2,6 +2,7 @@ const express = require('express');
 if (process.env.NODE_ENV !== 'PRODUCTION') { require('dotenv').config(); }
 const wsb_route = require('./routes/wsb_route');
 const body_parser = require('body-parser');
+const wsb_controller = require('./controllers/wsb_controller');
 const cron = require('./modules/cron');
 
 const app = express();
@@ -11,7 +12,7 @@ app.use('/stats', wsb_route);
 app.use(logError);
 app.use(invalidBodyPropertiesHandler);
 app.use(genericHandler);
-cron.startJobs();
+//cron.startJobs();
 
 const PORT = process.env.PORT || 3000
 
@@ -20,6 +21,12 @@ app.get('/', (req, res) => {
         message: 'WE ARE WATHCING YOU'
     });
 });
+
+app.post('/add', async (req, res) => {
+    const addedPost = await wsb_controller.addPostAndPostSymbol(50);
+    res.json(addedPost);
+});
+
 
 app.listen(PORT || 3000, () => {
     console.log(`Listening to port ${PORT}`);

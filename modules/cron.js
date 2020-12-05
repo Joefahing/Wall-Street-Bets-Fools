@@ -1,11 +1,11 @@
 const CronJob = require('cron').CronJob;
-const wsb = require('./wsb');
+const wsb_controller = require('../controllers/wsb_controller');
 
-const cron_wsb_get_post = new CronJob('0 */1 * * *', () => {
-    wsb.addPostAndStockPost(250).then(result => console.log(`Added ${result.length} Posts`))
+const wsbGetPost = new CronJob('0 */1 * * *', () => {
+    wsb_controller.addPostAndPostSymbol(250).then(result => console.log(`Added ${result.length} Posts`))
 }, null);
 
 function startJobs() {
-    cron_wsb_get_post.start();
+    wsbGetPost.start();
 }
 exports.startJobs = startJobs;

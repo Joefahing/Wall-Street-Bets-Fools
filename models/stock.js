@@ -12,7 +12,7 @@ StockSchema.methods.isLowVolumn = function () {
     return this.volumn < 10000000
 };
 
-StockSchema.statics.getAllSymbolSet = async function () {
+StockSchema.statics.getSymbolSet = async function () {
     const all_symbol_from_db = await this.find({}, 'symbol');
     const all_symbol = all_symbol_from_db.map(data => data.symbol);
     return new Set(all_symbol);

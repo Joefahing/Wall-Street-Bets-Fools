@@ -21,7 +21,6 @@ PostSchema.statics.createPost = async function (id, flair = '', title, content =
     return newPost
 }
 
-
 PostSchema.statics.findGainLossByDate = async function (start_date = new Date('1970-01-01'), end_date = new Date()) {
 
     try {
@@ -61,7 +60,5 @@ PostSchema.statics.numberOfGainLoss = function (posts) {
 
     return total;
 }
-
-
 
 module.exports = mongoose.model('Post', PostSchema);
