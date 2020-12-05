@@ -53,6 +53,33 @@ function gainLossSummary(current_posts, past_posts) {
     return postSummary;
 }
 
+function generateStartEndDate(period, end_date = new Date(), pastBy = 1) {
+    let numberOfDays = 0;
+    let start_date;
+
+    switch (period) {
+        case 'day':
+            numberOfDays = 1;
+            break;
+
+        case 'week':
+            numberOfDays = 7
+            break;
+
+        case 'month':
+            numberOfDays = 30;
+            break;
+    }
+
+    start_date = PastTimestamp.PastDay(end_date, numberOfDays * pastBy);
+
+    return {
+        start_date: start_date,
+        end_date: end_date,
+    }
+
+}
+
 function generateCurrentPastDate(period = 'week', end_date = new Date(), pastBy = 1) {
     let current_end_date = end_date;
     let current_start_date;
@@ -89,15 +116,16 @@ function generateCurrentPastDate(period = 'week', end_date = new Date(), pastBy 
     return dates
 }
 
-
 async function gainLoss(summary_period = 'week') {
     const dates = generateCurrentPastDate(summary_period);
     const current_posts = await Post.findGainLossByDate(dates.current_start_date, dates.current_end_date);
     const past_posts = await Post.findGainLossByDate(dates.previous_start_date, dates.previous_end_date);
-
     const summary = gainLossSummary(current_posts, past_posts);
 
-    return summary;
+    return {
+        summary: summary,
+        data_used: current_posts
+    };
 }
 
 async function addPostAndPostSymbol(go_through = 100) {
@@ -123,8 +151,18 @@ async function addPostAndPostSymbol(go_through = 100) {
             await PostSymbol.createPostSymbol(id, flair, symbol);
         }
     }
+
     return addedPosts;
+}
+
+async function topNStockSymbol(period, top = 5) {
+
+    const { start_date, end_date } = generateStartEndDate(period);
+    const topStocks = await PostSymbol.findTopNStocks(top, start_date, end_date);
+
+    return topStocks;
 }
 
 exports.addPostAndPostSymbol = addPostAndPostSymbol;
 exports.gainLoss = gainLoss;
+exports.topNStockSymbol = topNStockSymbol;
