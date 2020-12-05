@@ -94,10 +94,12 @@ async function gainLoss(summary_period = 'week') {
     const dates = generateCurrentPastDate(summary_period);
     const current_posts = await Post.findGainLossByDate(dates.current_start_date, dates.current_end_date);
     const past_posts = await Post.findGainLossByDate(dates.previous_start_date, dates.previous_end_date);
-
     const summary = gainLossSummary(current_posts, past_posts);
 
-    return summary;
+    return {
+        summary: summary,
+        data_used: current_posts
+    };
 }
 
 async function addPostAndPostSymbol(go_through = 100) {
@@ -125,6 +127,7 @@ async function addPostAndPostSymbol(go_through = 100) {
     }
     return addedPosts;
 }
+
 
 exports.addPostAndPostSymbol = addPostAndPostSymbol;
 exports.gainLoss = gainLoss;

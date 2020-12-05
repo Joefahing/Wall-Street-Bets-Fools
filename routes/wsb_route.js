@@ -1,7 +1,5 @@
 const express = require('express');
-const wsb = require('../modules/wsb');
 const wsb_controller = require('../controllers/wsb_controller');
-const PastTimestamp = require('../modules/past_date');
 
 const router = express.Router();
 
@@ -11,62 +9,17 @@ router.get('/', (req, res) => {
     });
 });
 
-// router.get('/gain_loss/post', async (req, res, next) => {
-//     const time_interval = req.query.interval;
+router.get('/gain_loss/post', async (req, res, next) => {
+    const interval = req.query.interval;
 
-//     if (!time_interval) next({
-//         from: 'get_post',
-//     })
-
-//     else {
-//         let current_interval_end_date = new Date();
-//         let current_interval_start_date;
-//         let previous_interval_end_date;
-//         let previous_interval_start_date;
-//         const pastBy = 1;
-
-
-//         switch (time_interval) {
-//             case 'day':
-//                 current_interval_start_date = PastTimestamp.PastDay();
-//                 previous_interval_end_date = PastTimestamp.PastDay(current_interval_end_date, pastBy);
-//                 previous_interval_start_date = PastTimestamp.PastDay(current_interval_start_date, pastBy);
-//                 break;
-
-//             case 'week':
-//                 current_interval_start_date = PastTimestamp.PastWeek();
-//                 previous_interval_end_date = PastTimestamp.PastWeek(current_interval_end_date, pastBy);
-//                 previous_interval_start_date = PastTimestamp.PastWeek(current_interval_start_date, pastBy);
-//                 break;
-
-//             case 'month':
-//                 current_interval_start_date = PastTimestamp.PastMonth();
-//                 previous_interval_end_date = PastTimestamp.PastMonth(current_interval_end_date, pastBy);
-//                 previous_interval_start_date = PastTimestamp.PastMonth(current_interval_start_date, pastBy);
-//                 break
-//         }
-
-//         const currentGainLossPosts = await wsb.getAllGainLossPost(current_interval_start_date, current_interval_end_date);
-
-//         // const previousGainLossPosts = await wsb.getAllGainLossPost(
-//         //     previous_interval_start_date, previous_interval_end_date);
-
-//         const gainLossSummary = await wsb.getGainLossSummary(time_interval);
-
-//         const result = {
-//             summary: gainLossSummary,
-//             date_used: {
-//                 interval: time_interval,
-//                 start_date: current_interval_start_date,
-//                 end_date: current_interval_end_date
-//             },
-//             posts: currentGainLossPosts,
-//         }
-
-//         res.status(200).json(result)
-//     }
-
-// });
+    if (!interval) next({
+        from: 'gain_loss/post',
+    })
+    else {
+        const post_result = await wsb_controller.gainLoss(interval);
+        res.status(200).json(post_result);
+    }
+});
 
 router.get('/gain_loss/summary', async (req, res) => {
     const time_interval = req.query.interval;
@@ -81,21 +34,5 @@ router.get('/gain_loss/summary', async (req, res) => {
 //         top_stock: result
 //     });
 // });
-
-// router.post('/add_post', async (req, res, next) => {
-//     if (!req.body.search || !Number.isInteger(parseInt(req.body.search))) {
-//         next({
-//             from: 'add_post'
-//         });
-//     }
-//     else {
-//         const addedPost = await wsb.addPostAndStockPost(parseInt(req.body.search));
-//         res.status(200).json({
-//             post_added: addedPost.length
-//         });
-//     }
-// });
-
-
 
 module.exports = router;
