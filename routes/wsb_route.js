@@ -22,17 +22,29 @@ router.get('/gain_loss/post', async (req, res, next) => {
 });
 
 router.get('/gain_loss/summary', async (req, res) => {
-    const time_interval = req.query.interval;
+    const query_interval = req.query.interval;
 
-    const summary = await wsb_controller.gainLoss(time_interval);
+    const summary = await wsb_controller.gainLoss(query_interval);
     res.status(200).json(summary);
 });
 
-// router.get('/stock/top', async (req, res) => {
-//     const result = await wsb.getTopNStocks();
-//     res.json({
-//         top_stock: result
-//     });
-// });
+router.get('/stock/top', async (req, res, next) => {
+
+    const interval = req.query.interval;
+    const topN = Number.parseInt(req.query.top);
+
+    if (!req.query.interval || !topN) {
+        next({
+            from: 'stock/top'
+        })
+    }
+    else {
+        const interval = req.query.interval || 'week';
+        const topN = Number.parseInt(req.query.top) || 5;
+
+        const topStock = await wsb_controller.topNStockSymbol(interval, topN)
+        res.json(topStock);
+    }
+});
 
 module.exports = router;

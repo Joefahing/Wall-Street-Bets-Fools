@@ -18,8 +18,16 @@ PostSymbol_Schema.statics.createPostSymbol = async function (post_id, flair = ''
     return newPostSymbol;
 }
 
-PostSymbol_Schema.statics.findTopNStocks = async function (top = 5) {
-    const topStocks = await Stock_Post.aggregate([
+PostSymbol_Schema.statics.findTopNStocks = async function (top = 5, start_date, end_date) {
+    const topStocks = await this.aggregate([
+        {
+            $match: {
+                date_created: {
+                    $gte: start_date,
+                    $lt: end_date
+                }
+            }
+        },
         {
             $group: {
                 _id: { symbol: '$symbol' },

@@ -12,7 +12,7 @@ app.use('/stats', wsb_route);
 app.use(logError);
 app.use(invalidBodyPropertiesHandler);
 app.use(genericHandler);
-//cron.startJobs();
+cron.startJobs();
 
 const PORT = process.env.PORT || 3000
 

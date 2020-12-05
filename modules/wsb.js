@@ -22,6 +22,8 @@ async function getPostFromReddit(number_of_post) {
 
     }).map(post => {
         return {
+            
+
             id: post.id,
             flair: post.link_flair_text,
             title: post.title,
