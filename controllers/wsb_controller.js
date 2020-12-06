@@ -120,11 +120,16 @@ async function gainLoss(summary_period = 'week') {
     const dates = generateCurrentPastDate(summary_period);
     const current_posts = await Post.findGainLossByDate(dates.current_start_date, dates.current_end_date);
     const past_posts = await Post.findGainLossByDate(dates.previous_start_date, dates.previous_end_date);
+    const all_posts = current_posts.concat(past_posts);
     const summary = gainLossSummary(current_posts, past_posts);
 
     return {
         summary: summary,
-        data_used: current_posts
+        data_used: all_posts,
+        dates: {
+            start_date: dates.previous_start_date,
+            end_date: dates.current_end_date
+        }
     };
 }
 
@@ -160,7 +165,13 @@ async function topNStockSymbol(period, top = 5) {
     const { start_date, end_date } = generateStartEndDate(period);
     const topStocks = await PostSymbol.findTopNStocks(top, start_date, end_date);
 
-    return topStocks;
+    return {
+        topStock: topStocks,
+        dates: {
+            start_date: start_date,
+            end_date: end_date
+        }
+    };
 }
 
 exports.addPostAndPostSymbol = addPostAndPostSymbol;
