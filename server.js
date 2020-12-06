@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 if (process.env.NODE_ENV !== 'PRODUCTION') { require('dotenv').config(); }
 const wsb_route = require('./routes/wsb_route');
 const body_parser = require('body-parser');
@@ -8,6 +9,7 @@ const cron = require('./modules/cron');
 const app = express();
 
 app.use(body_parser.urlencoded({ extended: false }));
+app.use(cors());
 app.use('/stats', wsb_route);
 app.use(logError);
 app.use(invalidBodyPropertiesHandler);
