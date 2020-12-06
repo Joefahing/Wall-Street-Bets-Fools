@@ -1,9 +1,4 @@
 const Snoowrap = require('snoowrap');
-const Post = require('../models/post');
-const Stock = require('../models/stock');
-const PostSymbol = require('../models/postsymbol');
-const common_word = require('./common_words');
-const PastTimestamp = require('./past_date');
 
 const r = new Snoowrap({
     userAgent: process.env.WSB_USER_AGENT,
@@ -22,7 +17,7 @@ async function getPostFromReddit(number_of_post) {
 
     }).map(post => {
         return {
-            
+
             id: post.id,
             flair: post.link_flair_text,
             title: post.title,
