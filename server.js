@@ -14,7 +14,8 @@ app.use('/stats', wsb_route);
 app.use(logError);
 app.use(invalidBodyPropertiesHandler);
 app.use(genericHandler);
-cron.startJobs();
+//Cron job is removed temperarly
+//cron.startJobs();
 
 const PORT = process.env.PORT || 3000
 
