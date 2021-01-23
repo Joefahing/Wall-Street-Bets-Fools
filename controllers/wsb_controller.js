@@ -1,3 +1,4 @@
+const Index = require('../models/index');
 const Post = require('../models/post');
 const Stock = require('../models/stock');
 const PostSymbol = require('../models/postsymbol');
@@ -174,6 +175,64 @@ async function topNStockSymbol(period, top = 5) {
     };
 }
 
+///This is a utility funtion created to trim off the time from date
+function trimTimeFromDate(date = new Date()) {
+    const dateString = date.toISOString();
+    const positionOfT = dateString.indexOf('T', 0)
+    const newDateString = dateString.substring(0, positionOfT);
+
+    //return new Date(newDateString);
+    return newDateString;
+}
+
+// Because all the date need to be in order for me to track index of previous date
+// I am going to use a map 
+async function populateIndex() {
+    const dateTracker = new Map();
+    const dailyIndexs = [];
+    const addedIndex = [];
+    const posts = await Post.findAllGainLossPost();
+    const painAversion = 2;
+
+    for (const post of posts) {
+        const targetDate = trimTimeFromDate(post.date_created);
+
+        if (!dateTracker.has(targetDate)) {
+            dateTracker.set(targetDate, 0);
+        }
+        let currentPoints = dateTracker.get(targetDate);
+        currentPoints = post.flair === 'Gain' ? currentPoints + 1 : currentPoints - painAversion;
+        dateTracker.set(targetDate, currentPoints)
+    }
+
+    const keys = Array.from(dateTracker.keys());
+    keys.sort((a, b) => a - b);
+
+    let currentIndex = 0
+    for (const key of keys) {
+        currentIndex = currentIndex + dateTracker.get(key);
+
+        const newIndexObj = {
+            date: new Date(key),
+            index: currentIndex
+        }
+        dailyIndexs.push(newIndexObj);
+    }
+
+    for (const dailyIndex of dailyIndexs) {
+        const exists = await Index.dateExists(dailyIndex.date);
+
+        if (!exists) {
+            const newIndex = await Index.createIndex(dailyIndex.index, dailyIndex.date);
+            addedIndex.push(newIndex);
+        }
+    }
+    return addedIndex;
+}
+
+
+
 exports.addPostAndPostSymbol = addPostAndPostSymbol;
 exports.gainLoss = gainLoss;
 exports.topNStockSymbol = topNStockSymbol;
+exports.populateIndex = populateIndex;
