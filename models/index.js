@@ -18,7 +18,6 @@ IndexSchema.statics.createIndex = async function (currentIndex = 0, date) {
 IndexSchema.statics.findLastIndex = async function () {
     const lastRecord = await this.findOne()
         .sort({ date_created: -1 })
-        //.select('points')
         .exec();
     console.log(lastRecord.date_created);
     return lastRecord;
