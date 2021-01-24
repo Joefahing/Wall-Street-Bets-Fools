@@ -6,6 +6,7 @@ const PastTimestamp = require('../modules/past_date');
 const WSB = require('../modules/wsb');
 const CommonWord = require('../modules/common_words');
 const KPI = require('../modules/kpi');
+const post = require('../models/post');
 
 
 function getSymbolsFromTitle(title = '', symbol_set = new Set(), filter_words = new Set()) {
@@ -176,58 +177,82 @@ async function topNStockSymbol(period, top = 5) {
 }
 
 ///This is a utility funtion created to trim off the time from date
+// Will be moved to utility function module later
 function trimTimeFromDate(date = new Date()) {
     const dateString = date.toISOString();
     const positionOfT = dateString.indexOf('T', 0)
     const newDateString = dateString.substring(0, positionOfT);
 
-    //return new Date(newDateString);
     return newDateString;
 }
 
-// Because all the date need to be in order for me to track index of previous date
-// I am going to use a map 
-async function populateIndex() {
-    const dateTracker = new Map();
-    const dailyIndexs = [];
-    const addedIndex = [];
-    const posts = await Post.findAllGainLossPost();
+function groupPostByDate(posts) {
     const painAversion = 2;
+    const dateTracker = new Map();
 
     for (const post of posts) {
-        const targetDate = trimTimeFromDate(post.date_created);
+        const postDate = trimTimeFromDate(post.date_created);
 
-        if (!dateTracker.has(targetDate)) {
-            dateTracker.set(targetDate, 0);
+        if (!dateTracker.has(postDate)) {
+            dateTracker.set(postDate, 0);
         }
-        let currentPoints = dateTracker.get(targetDate);
+
+        let currentPoints = dateTracker.get(postDate);
         currentPoints = post.flair === 'Gain' ? currentPoints + 1 : currentPoints - painAversion;
-        dateTracker.set(targetDate, currentPoints)
+        dateTracker.set(postDate, currentPoints)
     }
 
-    const keys = Array.from(dateTracker.keys());
-    keys.sort((a, b) => a - b);
+    return dateTracker;
+}
 
-    let currentIndex = 0
-    for (const key of keys) {
-        currentIndex = currentIndex + dateTracker.get(key);
+async function insertIndexes(dateTracker, dateStrings, startingIndex) {
+    const insertedResult = [];
+    let rollingIndex = startingIndex;
 
-        const newIndexObj = {
-            date: new Date(key),
-            index: currentIndex
-        }
-        dailyIndexs.push(newIndexObj);
-    }
+    for (const dateString of dateStrings) {
+        const date = new Date(dateString);
+        const dateExists = await Index.dateExists(date);
+        rollingIndex = rollingIndex + dateTracker.get(dateString);
 
-    for (const dailyIndex of dailyIndexs) {
-        const exists = await Index.dateExists(dailyIndex.date);
-
-        if (!exists) {
-            const newIndex = await Index.createIndex(dailyIndex.index, dailyIndex.date);
-            addedIndex.push(newIndex);
+        if (dateExists === false) {
+            const result = await Index.createIndex(rollingIndex, date);
+            insertedResult.push(result);
         }
     }
-    return addedIndex;
+
+    return insertedResult;
+}
+
+async function addIndex() {
+    const lastRecord = await Index.findLastIndex();
+    const { points, date_created } = lastRecord;
+    date_created.setDate(date_created.getDate() + 1);
+
+    const posts = await Post.findGainLossByDate(date_created);
+    const dateTracker = groupPostByDate(posts);
+    
+    const sortedDateStrings = Array.from(dateTracker.keys());
+    sortedDateStrings.sort((a, b) => a - b);
+
+
+    const recordsInserted = await insertIndexes(dateTracker, sortedDateStrings, points);
+    return recordsInserted;
+}
+
+// Because all the date need to be in order for me to track index of previous date
+// I am going to use a map to store individual index each day and then add value accumtatively once dates are sorted
+async function initializeIndex() {
+
+    await Index.deleteMany({});
+
+    const posts = await Post.findAllGainLossPost();
+    const dateTracker = groupPostByDate(posts);
+    const sortedDateStrings = Array.from(dateTracker.keys());
+
+    sortedDateStrings.sort((a, b) => a - b);
+
+    const recordsInserted = await insertIndexes(dateTracker, sortedDateStrings, 0);
+    return recordsInserted;
 }
 
 
@@ -235,4 +260,5 @@ async function populateIndex() {
 exports.addPostAndPostSymbol = addPostAndPostSymbol;
 exports.gainLoss = gainLoss;
 exports.topNStockSymbol = topNStockSymbol;
-exports.populateIndex = populateIndex;
+exports.initializeIndex = initializeIndex;
+exports.addIndex = addIndex;
