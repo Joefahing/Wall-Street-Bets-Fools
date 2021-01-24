@@ -10,7 +10,7 @@ const PostSchema = new Schema({
 });
 
 PostSchema.statics.createPost = async function (id, flair = '', title, content = '') {
-    
+
     const newPost = await this.create({
         post_id: id,
         title: title,
@@ -19,6 +19,25 @@ PostSchema.statics.createPost = async function (id, flair = '', title, content =
     })
 
     return newPost
+}
+
+PostSchema.statics.findAllGainLossPost = async function () {
+    try {
+        const posts = await this.find()
+            .where('flair').in(['Gain', 'Loss'])
+            .exec();
+        return posts.map(post => {
+            return {
+                title: post.title,
+                flair: post.flair,
+                post_id: '',
+                date_created: post.date_created
+            }
+        });
+    } catch (error) {
+        console.log('Error occurred at getAllPost methods')
+        throw error;
+    }
 }
 
 PostSchema.statics.findGainLossByDate = async function (start_date = new Date('1970-01-01'), end_date = new Date()) {
