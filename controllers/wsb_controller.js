@@ -6,7 +6,7 @@ const PastTimestamp = require('../modules/past_date');
 const WSB = require('../modules/wsb');
 const CommonWord = require('../modules/common_words');
 const KPI = require('../modules/kpi');
-const post = require('../models/post');
+const utility =  require('../modules/utility');
 
 
 function getSymbolsFromTitle(title = '', symbol_set = new Set(), filter_words = new Set()) {
