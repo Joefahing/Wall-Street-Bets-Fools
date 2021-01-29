@@ -48,7 +48,7 @@ router.get('/stock/top', async (req, res, next) => {
 });
 
 router.get('/populate', async (req, res) => {
-    const records = await wsb_controller.addIndex();
+    const records = await wsb_controller. xIndex();
     console.log(records);
     res.send('done');
 })

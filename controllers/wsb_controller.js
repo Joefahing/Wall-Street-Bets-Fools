@@ -6,7 +6,7 @@ const PastTimestamp = require('../modules/past_date');
 const WSB = require('../modules/wsb');
 const CommonWord = require('../modules/common_words');
 const KPI = require('../modules/kpi');
-const utility =  require('../modules/utility');
+const utility = require('../modules/utility');
 
 
 function getSymbolsFromTitle(title = '', symbol_set = new Set(), filter_words = new Set()) {
@@ -205,8 +205,12 @@ async function insertIndexes(dateTracker, dateStrings, startingIndex) {
         rollingIndex = rollingIndex + dateTracker.get(dateString);
 
         if (dateExists === false) {
-            const result = await Index.createIndex(rollingIndex, date);
-            insertedResult.push(result);
+            try {
+                const result = await Index.createIndex(rollingIndex, date);
+                insertedResult.push(result);
+            } catch (err) {
+                throw err;
+            }
         }
     }
 
@@ -216,18 +220,21 @@ async function insertIndexes(dateTracker, dateStrings, startingIndex) {
 async function addIndex() {
     const lastRecord = await Index.findLastIndex();
     const last_date = lastRecord.date_created;
-    const last_points =  lastRecord.points
+    const last_points = lastRecord.points
     last_date.setDate(last_date.getDate() + 1);
 
     const posts = await Post.findGainLossByDate(last_date);
     const dateTracker = groupPostByDate(posts);
-    
+
     const sortedDateStrings = Array.from(dateTracker.keys());
     sortedDateStrings.sort((a, b) => a - b);
 
-
-    const recordsInserted = await insertIndexes(dateTracker, sortedDateStrings, last_points);
-    return recordsInserted;
+    try {
+        const recordsInserted = await insertIndexes(dateTracker, sortedDateStrings, last_points);
+        return recordsInserted;
+    } catch (err) {
+        throw err
+    }
 }
 
 // Because all the date need to be in order for me to track index of previous date
@@ -251,5 +258,4 @@ async function initializeIndex() {
 exports.addPostAndPostSymbol = addPostAndPostSymbol;
 exports.gainLoss = gainLoss;
 exports.topNStockSymbol = topNStockSymbol;
-exports.initializeIndex = initializeIndex;
 exports.addIndex = addIndex;
