@@ -176,22 +176,12 @@ async function topNStockSymbol(period, top = 5) {
     };
 }
 
-///This is a utility funtion created to trim off the time from date
-// Will be moved to utility function module later
-function trimTimeFromDate(date = new Date()) {
-    const dateString = date.toISOString();
-    const positionOfT = dateString.indexOf('T', 0)
-    const newDateString = dateString.substring(0, positionOfT);
-
-    return newDateString;
-}
-
 function groupPostByDate(posts) {
     const painAversion = 2;
     const dateTracker = new Map();
 
     for (const post of posts) {
-        const postDate = trimTimeFromDate(post.date_created);
+        const postDate = utility.trimTimeFromDate(post.date_created);
 
         if (!dateTracker.has(postDate)) {
             dateTracker.set(postDate, 0);
@@ -225,17 +215,18 @@ async function insertIndexes(dateTracker, dateStrings, startingIndex) {
 
 async function addIndex() {
     const lastRecord = await Index.findLastIndex();
-    const { points, date_created } = lastRecord;
-    date_created.setDate(date_created.getDate() + 1);
+    const last_date = lastRecord.date_created;
+    const last_points =  lastRecord.points
+    last_date.setDate(last_date.getDate() + 1);
 
-    const posts = await Post.findGainLossByDate(date_created);
+    const posts = await Post.findGainLossByDate(last_date);
     const dateTracker = groupPostByDate(posts);
     
     const sortedDateStrings = Array.from(dateTracker.keys());
     sortedDateStrings.sort((a, b) => a - b);
 
 
-    const recordsInserted = await insertIndexes(dateTracker, sortedDateStrings, points);
+    const recordsInserted = await insertIndexes(dateTracker, sortedDateStrings, last_points);
     return recordsInserted;
 }
 
