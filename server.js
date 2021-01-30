@@ -17,8 +17,7 @@ app.use('/post', post_router);
 app.use(logError);
 app.use(invalidBodyPropertiesHandler);
 app.use(genericHandler);
-//Cron job is removed temperarly
-//cron.startJobs();
+cron.startJobs();
 
 const PORT = process.env.PORT || 3000
 
