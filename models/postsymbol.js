@@ -1,18 +1,21 @@
 const mongoose = require('../modules/dbhelper').mongoose;
-
 const Schema = mongoose.Schema;
+
+const milliseconds = 1000;
+
 const PostSymbol_Schema = new Schema({
     post_id: String,
     flair: String,
     symbol: String,
-    date_created: { type: Date, default: new Date() }
+    date_created: Date
 });
 
-PostSymbol_Schema.statics.createPostSymbol = async function (post_id, flair = '', symbol) {
+PostSymbol_Schema.statics.createPostSymbol = async function (post_id, flair = '', symbol, date_created_utc_seconds) {
     const newPostSymbol = await this.create({
         post_id: post_id,
         flair: flair,
-        symbol: symbol
+        symbol: symbol,
+        date_created: new Date(date_created_utc_seconds * milliseconds)
     });
 
     return newPostSymbol;
