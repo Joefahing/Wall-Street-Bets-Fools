@@ -21,6 +21,7 @@ async function getPostFromReddit(number_of_post) {
             flair: post.link_flair_text,
             title: post.title,
             content: post.selftext,
+            date_created: post.created_utc
         }
     });
 }

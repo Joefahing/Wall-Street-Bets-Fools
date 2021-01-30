@@ -134,30 +134,6 @@ async function gainLoss(summary_period = 'week') {
     };
 }
 
-async function redditPost_remove() {
-    const go_through = 400
-    const addedPosts = []
-    const postsFromReddit = await WSB.getPostFromReddit(go_through);
-
-    for (const post of postsFromReddit) {
-        console.log(post[0]);
-
-        const { id, flair, title, content } = post
-
-
-        //   if (postExists || (flair !== 'Gain' && flair !== 'Loss' && number_stock_symbol === 0)) continue;
-        if (flair === 'Gain' || flair === 'Loss') {
-            const savedPost = {
-                id,
-                flair,
-                title
-            }
-            addedPosts.push(savedPost);
-        }
-
-    }
-    return addedPosts;
-}
 
 async function addPostAndPostSymbol(go_through = 100) {
 
@@ -168,18 +144,19 @@ async function addPostAndPostSymbol(go_through = 100) {
     const filter_dict = new Set(filter_words);
 
     for (const post of postsFromReddit) {
-        const { id, flair, title, content } = post
+        const { id, flair, title, content, date_created } = post
         const symbolsFromPost = getSymbolsFromTitle(title, symbol_dictionary, filter_dict);
         const number_stock_symbol = symbolsFromPost.length
 
         const postExists = await Post.exists({ post_id: id });
+
         if (postExists || (flair !== 'Gain' && flair !== 'Loss' && number_stock_symbol === 0)) continue;
 
-        const savedPost = await Post.createPost(id, flair, title, content);
+        const savedPost = await Post.createPost(id, flair, title, content, date_created);
         addedPosts.push(savedPost);
 
         for (const symbol of symbolsFromPost) {
-            await PostSymbol.createPostSymbol(id, flair, symbol);
+            await PostSymbol.createPostSymbol(id, flair, symbol, date_created);
         }
     }
 
@@ -200,13 +177,14 @@ async function topNStockSymbol(period, top = 5) {
     };
 }
 
+//Adding all the Gain and Loss post together down to hour
 function groupPostByDate(posts) {
     const painAversion = 2;
     const dateTracker = new Map();
 
     for (const post of posts) {
-
         const postDate = utility.trimTimeFromDate(post.date_created);
+
         if (!dateTracker.has(postDate)) {
             dateTracker.set(postDate, 0);
         }
@@ -250,12 +228,11 @@ async function addIndex() {
     if (hasRecord) {
         last_date = lastRecord.date_created;
         last_points = lastRecord.points
-        last_date.setDate(last_date.getDate() + 1);
+        last_date.setMinutes(last_date.getMinutes() + 1);
     }
 
     const posts = await Post.findGainLossByDate(last_date);
     const dateTracker = groupPostByDate(posts);
-
     const sortedDateStrings = Array.from(dateTracker.keys());
     sortedDateStrings.sort((a, b) => a - b);
 
@@ -267,28 +244,8 @@ async function addIndex() {
     }
 }
 
-
-
-// Because all the date need to be in order for me to track index of previous date
-// I am going to use a map to store individual index each day and then add value accumtatively once dates are sorted
-async function removeIndex() {
-
-    const removeIndex = await Index.deleteMany({});
-
-    // const posts = await Post.findAllGainLossPost();
-    // const dateTracker = groupPostByDate(posts);
-    // const sortedDateStrings = Array.from(dateTracker.keys());
-
-    // sortedDateStrings.sort((a, b) => a - b);
-
-    // const recordsInserted = await insertIndexes(dateTracker, sortedDateStrings, 0);
-    return removeIndex;
-}
-
 exports.addPostAndPostSymbol = addPostAndPostSymbol;
 exports.gainLoss = gainLoss;
 exports.topNStockSymbol = topNStockSymbol;
 exports.addIndex = addIndex;
-exports.removeIndex = removeIndex;
-exports.redditPost = redditPost_remove;
 

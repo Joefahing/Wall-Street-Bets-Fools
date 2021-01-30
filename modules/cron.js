@@ -16,4 +16,5 @@ function startJobs() {
     wsbGetPost.start();
     wsbAddIndex.start();
 }
+
 exports.startJobs = startJobs;

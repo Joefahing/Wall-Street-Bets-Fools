@@ -1,21 +1,23 @@
 const mongoose = require('../modules/dbhelper').mongoose;
 const Schema = mongoose.Schema;
 
+const milliseconds = 1000
+
 const PostSchema = new Schema({
     post_id: String,
     flair: String,
     title: String,
     body: String,
-    date_created: { type: Date, default: new Date() },
+    date_created: Date
 });
 
-PostSchema.statics.createPost = async function (id, flair = '', title, content = '') {
-
+PostSchema.statics.createPost = async function (id, flair = '', title, content = '', date_created_utc_seconds) {
     const newPost = await this.create({
         post_id: id,
         title: title,
         flair: flair,
-        body: content
+        body: content,
+        date_created: new Date(date_created_utc_seconds * milliseconds)
     })
 
     return newPost
