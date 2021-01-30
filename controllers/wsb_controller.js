@@ -79,7 +79,6 @@ function generateStartEndDate(period, end_date = new Date(), pastBy = 1) {
         start_date: start_date,
         end_date: end_date,
     }
-
 }
 
 function generateCurrentPastDate(period = 'week', end_date = new Date(), pastBy = 1) {
@@ -135,6 +134,31 @@ async function gainLoss(summary_period = 'week') {
     };
 }
 
+async function redditPost_remove() {
+    const go_through = 400
+    const addedPosts = []
+    const postsFromReddit = await WSB.getPostFromReddit(go_through);
+
+    for (const post of postsFromReddit) {
+        console.log(post[0]);
+
+        const { id, flair, title, content } = post
+
+
+        //   if (postExists || (flair !== 'Gain' && flair !== 'Loss' && number_stock_symbol === 0)) continue;
+        if (flair === 'Gain' || flair === 'Loss') {
+            const savedPost = {
+                id,
+                flair,
+                title
+            }
+            addedPosts.push(savedPost);
+        }
+
+    }
+    return addedPosts;
+}
+
 async function addPostAndPostSymbol(go_through = 100) {
 
     const addedPosts = []
@@ -181,8 +205,8 @@ function groupPostByDate(posts) {
     const dateTracker = new Map();
 
     for (const post of posts) {
-        const postDate = utility.trimTimeFromDate(post.date_created);
 
+        const postDate = utility.trimTimeFromDate(post.date_created);
         if (!dateTracker.has(postDate)) {
             dateTracker.set(postDate, 0);
         }
@@ -219,9 +243,15 @@ async function insertIndexes(dateTracker, dateStrings, startingIndex) {
 
 async function addIndex() {
     const lastRecord = await Index.findLastIndex();
-    const last_date = lastRecord.date_created;
-    const last_points = lastRecord.points
-    last_date.setDate(last_date.getDate() + 1);
+    const hasRecord = lastRecord !== null
+    let last_date = new Date('1970-01-01');
+    let last_points = 0;
+
+    if (hasRecord) {
+        last_date = lastRecord.date_created;
+        last_points = lastRecord.points
+        last_date.setDate(last_date.getDate() + 1);
+    }
 
     const posts = await Post.findGainLossByDate(last_date);
     const dateTracker = groupPostByDate(posts);
@@ -237,25 +267,28 @@ async function addIndex() {
     }
 }
 
+
+
 // Because all the date need to be in order for me to track index of previous date
 // I am going to use a map to store individual index each day and then add value accumtatively once dates are sorted
-async function initializeIndex() {
+async function removeIndex() {
 
-    await Index.deleteMany({});
+    const removeIndex = await Index.deleteMany({});
 
-    const posts = await Post.findAllGainLossPost();
-    const dateTracker = groupPostByDate(posts);
-    const sortedDateStrings = Array.from(dateTracker.keys());
+    // const posts = await Post.findAllGainLossPost();
+    // const dateTracker = groupPostByDate(posts);
+    // const sortedDateStrings = Array.from(dateTracker.keys());
 
-    sortedDateStrings.sort((a, b) => a - b);
+    // sortedDateStrings.sort((a, b) => a - b);
 
-    const recordsInserted = await insertIndexes(dateTracker, sortedDateStrings, 0);
-    return recordsInserted;
+    // const recordsInserted = await insertIndexes(dateTracker, sortedDateStrings, 0);
+    return removeIndex;
 }
-
-
 
 exports.addPostAndPostSymbol = addPostAndPostSymbol;
 exports.gainLoss = gainLoss;
 exports.topNStockSymbol = topNStockSymbol;
 exports.addIndex = addIndex;
+exports.removeIndex = removeIndex;
+exports.redditPost = redditPost_remove;
+
