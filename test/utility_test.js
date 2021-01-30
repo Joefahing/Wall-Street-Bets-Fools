@@ -7,7 +7,6 @@ describe('Utility Module', function () {
         it('Return date value in string with time trim off in yyyy-mm-dd format', function () {
             const firstDate = utility.trimTimeFromDate(new Date('2020-01-01T03:21:00'));
             expect(firstDate).to.equal('2020-01-01T08:00:00', 'with arguments');
-
         });
 
         it('trimTimeFormDate Without Arguments', function () {
@@ -17,7 +16,6 @@ describe('Utility Module', function () {
             const expectedString = isoString.substring(0, isoString.indexOf('T', 0) + 3) + ':00:00'
 
             expect(secondDate).to.equal(expectedString, 'without arguments');
-
         })
     });
 
