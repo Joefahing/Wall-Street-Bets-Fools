@@ -1,88 +1,91 @@
-const path = require('path');
 const fs = require('fs');
-const csv = require('fast-csv');
 
-const mongoose = require('./dbhelper').mongoose;
-const StockSchema = require('../models/stock');
-const Stock = mongoose.model('Stock', StockSchema);
 
-const nasdaq_csv = path.join(__dirname, '..', 'assets', 'NASDAQ.csv');
-const nyse_csv = path.join(__dirname, '..', 'assets', 'NYSE.csv');
 
-function getAllStockSymbolFromCSV() {
-    const stocks = []
+// const path = require('path');
+// const csv = require('fast-csv');
 
-    return new Promise((resolve, reject) => {
-        fs.createReadStream(nasdaq_csv)
-            .pipe(csv.parse({ headers: true }))
-            .on('data', (stock_data) => {
-                stocks.push({
-                    Symbol: stock_data.Symbol,
-                    Name: stock_data.Name,
-                    Sector: stock_data.Sector
-                });
-            })
-            .on('end', () => {
-                fs.createReadStream(nyse_csv)
-                    .pipe(csv.parse({ headers: true }))
-                    .on('data', (stock_data) => {
-                        stocks.push({
-                            Symbol: stock_data.Symbol,
-                            Name: stock_data.Name,
-                            Sector: stock_data.Sector
-                        });
-                    })
-                    .on('end', () => resolve(stocks))
-            })
-    })
-}
+// const mongoose = require('./dbhelper').mongoose;
+// const StockSchema = require('../models/stock');
+// const Stock = mongoose.model('Stock', StockSchema);
 
-async function addStockSymbols(allStocksInput) {
-    const allStocksFromCSV = allStocksInput;
+// const nasdaq_csv = path.join(__dirname, '..', 'assets', 'NASDAQ.csv');
+// const nyse_csv = path.join(__dirname, '..', 'assets', 'NYSE.csv');
 
-    const stocksAdded = []
+// function getAllStockSymbolFromCSV() {
+//     const stocks = []
 
-    try {
-        const allStocksFromDatabase = await Stock.find();
-        const allSymbolFromDatabase = allStocksFromDatabase.map(stock => stock.symbol);
+//     return new Promise((resolve, reject) => {
+//         fs.createReadStream(nasdaq_csv)
+//             .pipe(csv.parse({ headers: true }))
+//             .on('data', (stock_data) => {
+//                 stocks.push({
+//                     Symbol: stock_data.Symbol,
+//                     Name: stock_data.Name,
+//                     Sector: stock_data.Sector
+//                 });
+//             })
+//             .on('end', () => {
+//                 fs.createReadStream(nyse_csv)
+//                     .pipe(csv.parse({ headers: true }))
+//                     .on('data', (stock_data) => {
+//                         stocks.push({
+//                             Symbol: stock_data.Symbol,
+//                             Name: stock_data.Name,
+//                             Sector: stock_data.Sector
+//                         });
+//                     })
+//                     .on('end', () => resolve(stocks))
+//             })
+//     })
+// }
 
-        const stockDict = new Set(allSymbolFromDatabase);
+// async function addStockSymbols(allStocksInput) {
+//     const allStocksFromCSV = allStocksInput;
 
-        for (let index = 0; index < allStocksFromCSV.length; index++) {
-            const { Symbol, Name, Sector } = allStocksFromCSV[index];
+//     const stocksAdded = []
 
-            if (!stockDict.has(Symbol)) {
-                const newStock = new Stock({
-                    symbol: Symbol,
-                    name: Name,
-                    sector: Sector
-                });
-                const savedStock = await newStock.save();
-                stocksAdded.push(savedStock.symbol);
-            }
-        }
-    } catch (error) {
-        console.log('error ocurred during database extraction');
-        throw error;
-    }
-    return stocksAdded;
-}
+//     try {
+//         const allStocksFromDatabase = await Stock.find();
+//         const allSymbolFromDatabase = allStocksFromDatabase.map(stock => stock.symbol);
 
-exports.addStockSymbols = addStockSymbols;
+//         const stockDict = new Set(allSymbolFromDatabase);
 
-async function findSymbol(stock_symbol) {
-    try {
-        const stock_info = await Stock.find({
-            symbol: stock_symbol,
-        });
+//         for (let index = 0; index < allStocksFromCSV.length; index++) {
+//             const { Symbol, Name, Sector } = allStocksFromCSV[index];
 
-        return stock_info;
+//             if (!stockDict.has(Symbol)) {
+//                 const newStock = new Stock({
+//                     symbol: Symbol,
+//                     name: Name,
+//                     sector: Sector
+//                 });
+//                 const savedStock = await newStock.save();
+//                 stocksAdded.push(savedStock.symbol);
+//             }
+//         }
+//     } catch (error) {
+//         console.log('error ocurred during database extraction');
+//         throw error;
+//     }
+//     return stocksAdded;
+// }
 
-    } catch (error) {
-        return error;
-    }
-}
+// exports.addStockSymbols = addStockSymbols;
 
-exports.findSymbol = findSymbol;
+// async function findSymbol(stock_symbol) {
+//     try {
+//         const stock_info = await Stock.find({
+//             symbol: stock_symbol,
+//         });
+
+//         return stock_info;
+
+//     } catch (error) {
+//         return error;
+//     }
+// }
+
+// exports.findSymbol = findSymbol;
 
 
