@@ -206,7 +206,7 @@ async function insertIndexes(dateTracker, dateStrings, startingIndex) {
         const dateExists = await Index.dateExists(date);
         rollingIndex = rollingIndex + dateTracker.get(dateString);
 
-        if (dateExists === false) {
+        if (!dateExists) {
             try {
                 const result = await Index.createIndex(rollingIndex, date);
                 insertedResult.push(result);
@@ -244,8 +244,13 @@ async function addIndex() {
     }
 }
 
+async function removeIndex() {
+    const result = await Index.deleteMany({});
+    return result;
+}
+
 exports.addPostAndPostSymbol = addPostAndPostSymbol;
 exports.gainLoss = gainLoss;
 exports.topNStockSymbol = topNStockSymbol;
 exports.addIndex = addIndex;
-
+exports.removeIndex = removeIndex;
