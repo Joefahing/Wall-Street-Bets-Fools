@@ -15,7 +15,6 @@ router.get('/rank/:interval/:count', async (req, res, next) => {
     }
     else {
         const topStock = await wsb_controller.topNStockSymbol(interval, count);
-        res.json(topStock);
         res.status(200).json(topStock);
     }
 });
