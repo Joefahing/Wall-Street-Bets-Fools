@@ -54,7 +54,6 @@ function fetchFromServer(host = '', file = '') {
                     symbols.pop();
                     resolve(symbols);
                 });
-
             });
         });
 
