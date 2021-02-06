@@ -3,10 +3,9 @@ function trimTimeFromDate(date = new Date(), setSecond = false) {
     const indexOfMinute = 6
     const isoString = date.toISOString();
     const dateString = setSecond
-        ? isoString.substring(0, isoString.indexOf('T') + indexOfMinute) + ':00'
-        : isoString.substring(0, isoString.indexOf('T'));
+        ? isoString.substring(0, isoString.indexOf('T') + indexOfMinute) + ':00Z'
+        : isoString.substring(0, isoString.indexOf('T') + 4) + '00:00Z';
     const newDate = new Date(dateString);
-
     return newDate.getTime();
 }
 

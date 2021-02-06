@@ -7,6 +7,7 @@ const WSB = require('../modules/wsb');
 const CommonWord = require('../modules/common_words');
 const KPI = require('../modules/kpi');
 const utility = require('../modules/utility');
+const post = require('../models/post');
 
 
 function getSymbolsFromTitle(title = '', symbol_set = new Set(), filter_words = new Set()) {
@@ -117,8 +118,8 @@ function generateCurrentPastDate(period = 'week', end_date = new Date(), pastBy 
     return dates
 }
 
-async function gainLoss(summary_period = 'week') {
-    const dates = generateCurrentPastDate(summary_period);
+async function gainLoss(interval = 'week') {
+    const dates = generateCurrentPastDate(interval);
     const current_posts = await Post.findGainLossByDate(dates.current_start_date, dates.current_end_date);
     const past_posts = await Post.findGainLossByDate(dates.previous_start_date, dates.previous_end_date);
     const all_posts = current_posts.concat(past_posts);
@@ -134,6 +135,20 @@ async function gainLoss(summary_period = 'week') {
     };
 }
 
+exports.historicalIndex = async function (interval = 'week') {
+    const dates = generateCurrentPastDate(interval);
+    const currentIndexes = await Index.findIndexByDate(dates.current_start_date, dates.current_end_date);
+    const pastIndexes = await Index.findIndexByDate(dates.previous_start_date, dates.previous_end_date);
+    const allIndexes = currentIndexes.concat(pastIndexes);
+
+    return {
+        data_used: allIndexes,
+        dates: {
+            start_date: dates.previous_start_date,
+            end_date: dates.current_end_date
+        }
+    }
+}
 
 async function addPostAndPostSymbol(go_through = 100) {
 
@@ -201,17 +216,32 @@ async function insertIndexes(dateTracker, dateStrings, startingIndex) {
     const insertedResult = [];
     let rollingIndex = startingIndex;
 
-    for (const dateString of dateStrings) {
-        const date = new Date(dateString);
-        const dateExists = await Index.dateExists(date);
-        rollingIndex = rollingIndex + dateTracker.get(dateString);
+    console.log(`${dateTracker.toString()}  ${dateStrings.length}  ${startingIndex}`)
 
-        if (!dateExists) {
-            try {
-                const result = await Index.createIndex(rollingIndex, date);
-                insertedResult.push(result);
-            } catch (err) {
-                throw err;
+    if (dateStrings.length === 0) {
+        console.log(new Date())
+        const date = utility.trimTimeFromDate(new Date());
+        try {
+            console.log(new Date(date));
+            const result = await Index.createIndex(startingIndex, date);
+            insertedResult.push(result);
+        } catch (err) {
+            throw err;
+        }
+    }
+    else {
+        for (const dateString of dateStrings) {
+            const date = new Date(dateString);
+            const dateExists = await Index.dateExists(date);
+            rollingIndex = rollingIndex + dateTracker.get(dateString);
+
+            if (!dateExists) {
+                try {
+                    const result = await Index.createIndex(rollingIndex, date);
+                    insertedResult.push(result);
+                } catch (err) {
+                    throw err;
+                }
             }
         }
     }

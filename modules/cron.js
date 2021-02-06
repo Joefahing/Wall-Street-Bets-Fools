@@ -6,7 +6,7 @@ const wsbGetPost = new CronJob('*/30 * * * *', () => {
         .then(result => console.log(`Added ${result.length} Posts`))
 }, null);
 
-const wsbAddIndex = new CronJob('5 */1 * * *', () => {
+const wsbAddIndex = new CronJob('2 */1 * * *', () => {
     wsb_controller.addIndex()
         .then(result => console.log(result.length))
         .catch(error => console.log(`error from addIndex Cron Job ${error}`));

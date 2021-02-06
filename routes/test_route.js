@@ -15,11 +15,22 @@ router.get('/ftp', async (req, res, next) => {
     }
 });
 
-
-router.get('/index', async (req, res, next) => {
+router.post('/index', async (req, res, next) => {
     try {
         const removeResult = await wsb_controller.removeIndex();
         const result = await wsb_controller.addIndex();
+        res.send(result);
+
+    } catch (error) {
+        console.log(error);
+        next(error);
+    }
+});
+
+router.get('/index/:interval', async (req, res, next) => {
+    const interval = req.params.interval;
+    try {
+        const result = await wsb_controller.historicalIndex(interval);
         res.send(result);
 
     } catch (error) {
