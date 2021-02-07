@@ -11,17 +11,6 @@ describe('FTP Module', function () {
             const stockSymbols = await ftp.fetchFromServer(host, file);
             stockSymbols.should.be.a('array');
         });
-
-        it('should return error when anything goes wrong to fetch function', async function (done) {
-            const host = 'ftp.nasdaqtrader.com';
-            const file = '/SymbolDirectory/nasdaqlsted.txt';
-
-            try {
-                await ftp.fetchFromServer(host, file);
-            } catch (error) {
-                error.should.be.a('error');
-            }
-        });
     });
 
     describe('formatCompanyName Function', function () {
