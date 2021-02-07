@@ -1,5 +1,6 @@
 const CronJob = require('cron').CronJob;
 const wsb_controller = require('../controllers/wsb_controller');
+const ftp_controller = require('../controllers/ftp_controller');
 
 const wsbGetPost = new CronJob('*/30 * * * *', () => {
     wsb_controller.addPostAndPostSymbol(250)
@@ -12,9 +13,16 @@ const wsbAddIndex = new CronJob('2 */1 * * *', () => {
         .catch(error => console.log(`error from addIndex Cron Job ${error}`));
 }, null);
 
+const ftpAddSymbol = new CronJob('0 0 1 * *', () => {
+    ftp_controller.addIndex()
+        .then(result => console.log(result))
+        .catch(error => console.log(`Error on ftp cron job \n${error}`));
+}, null);
+
 function startJobs() {
     wsbGetPost.start();
     wsbAddIndex.start();
+    ftpAddSymbol.start();
 }
 
 exports.startJobs = startJobs;
