@@ -231,10 +231,8 @@ async function insertIndexes(dateTracker, dateStrings, startingIndex) {
     let rollingIndex = startingIndex;
 
     if (dateStrings.length === 0) {
-        console.log(new Date())
         const date = utility.trimMinuteFromDate(new Date());
         try {
-            console.log(new Date(date));
             const result = await Index.createIndex(startingIndex, date);
             insertedResult.push(result);
         } catch (err) {
