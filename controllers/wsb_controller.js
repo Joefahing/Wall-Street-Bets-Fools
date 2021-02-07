@@ -3,7 +3,8 @@ const Post = require('../models/post');
 const Stock = require('../models/stock');
 const PostSymbol = require('../models/postsymbol');
 const PastTimestamp = require('../modules/past_date');
-const WSB = require('../modules/wsb');
+const Word = require('../models/word');
+const wsb = require('../modules/wsb');
 const CommonWord = require('../modules/common_words');
 const KPI = require('../modules/kpi');
 const utility = require('../modules/utility');
@@ -166,7 +167,7 @@ exports.getIndex = async function () {
 async function addPostAndPostSymbol(go_through = 100) {
 
     const addedPosts = []
-    const postsFromReddit = await WSB.getPostFromReddit(go_through);
+    const postsFromReddit = await wsb.getPostFromReddit(go_through);
     const symbol_dictionary = await Stock.getSymbolSet();
     const filter_words = await CommonWord.mostCommonWords(200);
     const filter_dict = new Set(filter_words);
@@ -286,6 +287,13 @@ async function addIndex() {
 async function removeIndex() {
     const result = await Index.deleteMany({});
     return result;
+}
+
+exports.removeInvalidStockPost = async function () {
+    const filterWords = await Word.getAllWords();
+    const deletedPost = await PostSymbol.deleteMany({})
+        .where('symbol').in(filterWords);
+    return deletedPost;
 }
 
 exports.addPostAndPostSymbol = addPostAndPostSymbol;
