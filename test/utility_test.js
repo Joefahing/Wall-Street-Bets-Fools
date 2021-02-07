@@ -4,9 +4,9 @@ const utility = require('../modules/utility');
 
 describe('Utility Module', function () {
     describe('Function trimTimeFromDate', function () {
-        it('Return date value in string with time trim off in yyyy-mm-dd format', function () {
-            const firstDate = utility.trimTimeFromDate(new Date('2020-01-01T03:21:00'));
-            expect(firstDate).to.equal(1577866860000);
+        it('Return date value in string with time trim off in number format', function () {
+            const firstDate = utility.trimTimeFromDate(new Date('2020-01-01T03:21:00Z'));
+            expect(firstDate).to.equal(1577836800000);
         });
     });
 
