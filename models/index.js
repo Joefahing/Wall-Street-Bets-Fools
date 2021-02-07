@@ -25,9 +25,8 @@ IndexSchema.statics.findIndexByDate = async function (start_date, end_date) {
     const records = await this.find()
         .where('date_created').gte(start_date)
         .where('date_created').lte(end_date)
-        .sort({ 'date_created': 'asc' })
+        .sort({ date_created: 1 })
         .exec()
-
     return records;
 }
 
