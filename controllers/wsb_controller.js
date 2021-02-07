@@ -7,7 +7,6 @@ const WSB = require('../modules/wsb');
 const CommonWord = require('../modules/common_words');
 const KPI = require('../modules/kpi');
 const utility = require('../modules/utility');
-const post = require('../models/post');
 
 
 function getSymbolsFromTitle(title = '', symbol_set = new Set(), filter_words = new Set()) {
