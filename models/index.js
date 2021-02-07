@@ -26,6 +26,7 @@ IndexSchema.statics.findIndexByDate = async function (start_date, end_date) {
         .where('date_created').gte(start_date)
         .where('date_created').lte(end_date)
         .sort({ date_created: 1 })
+        .select('points date_created')
         .exec()
     return records;
 }

@@ -1,7 +1,9 @@
+/*
 const router = require('express').Router();
 const ftp = require('../modules/ftp');
 const wsb_controller = require('../controllers/wsb_controller');
 const ftp_controller = require('../controllers/ftp_controller');
+const wsb = require('../modules/wsb');
 
 router.get('/ftp', async (req, res, next) => {
     const host = 'ftp.nasdaqtrader.com';
@@ -59,4 +61,18 @@ router.get('/index', async (req, res, next) => {
     res.send(result);
 });
 
+router.get('/stock/remove', async (req, res) => {
+    const result = await ftp_controller.removeInvalidSymbols();
+    console.log(result)
+    res.send(result);
+})
+
+router.get('/stockpost/remove', async (req, res) => {
+    const result = await wsb_controller.removeInvalidStockPost();
+    console.log(result)
+    res.send(result);
+})
+
 module.exports = router;
+
+*/
