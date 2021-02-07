@@ -31,6 +31,14 @@ IndexSchema.statics.findIndexByDate = async function (start_date, end_date) {
     return records;
 }
 
+IndexSchema.statics.findIndexByTime = async function (date_created) {
+    const record = await this.find()
+        .where('date_created').eq(date_created)
+        .exec()
+
+    return record
+}
+
 IndexSchema.statics.dateExists = async function (date) {
     const record = await this.findOne({ date_created: date });
     return record !== null;

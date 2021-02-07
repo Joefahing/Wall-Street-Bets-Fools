@@ -17,4 +17,23 @@ router.get('/profit/:interval', async (req, res, next) => {
     }
 });
 
+router.get('/index/:interval', async (req, res, next) => {
+    const interval = req.params.interval;
+
+    try {
+        const result = await wsb_controller.historicalIndex(interval);
+        res.status(200).json(result);
+
+    } catch (error) {
+        console.log(error);
+        next(error);
+    }
+});
+
+router.get('/index', async (req, res, next) => {
+    const result = await wsb_controller.getIndex();
+
+    res.status(200).json(result);
+});
+
 module.exports = router;

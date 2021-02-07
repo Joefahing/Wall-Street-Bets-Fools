@@ -39,4 +39,9 @@ router.get('/index/:interval', async (req, res, next) => {
     }
 });
 
+router.get('/index', async (req, res, next) => {
+    const result = await wsb_controller.getIndex();
+    res.send(result);
+});
+
 module.exports = router;

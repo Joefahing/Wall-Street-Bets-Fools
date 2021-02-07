@@ -24,7 +24,7 @@ function getSymbolsFromTitle(title = '', symbol_set = new Set(), filter_words = 
 }
 
 function totalGainLossOfPost(posts) {
-    const total = {
+    let total = {
         gain_total: 0,
         loss_total: 0,
         get index_total() {
@@ -32,7 +32,7 @@ function totalGainLossOfPost(posts) {
         }
     }
 
-    for (post of posts) {
+    for (const post of posts) {
         if (post.flair === 'Gain') total.gain_total++;
         else total.loss_total++;
     }
@@ -150,6 +150,20 @@ exports.historicalIndex = async function (interval = 'week') {
     }
 }
 
+exports.getIndex = async function () {
+    const baseDate = new Date(utility.trimTimeFromDate());
+    const currentIndex = await Index.findLastIndex();
+    const baseIndexes = await Index.findIndexByDate(baseDate, baseDate);
+    const baseIndex = baseIndexes[0];
+
+    return {
+        current_index: currentIndex.points,
+        current_date: currentIndex.date_created,
+        base_index: baseIndex.points,
+        base_date: baseIndex.date_created
+    }
+}
+
 async function addPostAndPostSymbol(go_through = 100) {
 
     const addedPosts = []
@@ -198,7 +212,7 @@ function groupPostByDate(posts) {
     const dateTracker = new Map();
 
     for (const post of posts) {
-        const postDate = utility.trimTimeFromDate(post.date_created);
+        const postDate = utility.trimMinuteFromDate(post.date_created);
 
         if (!dateTracker.has(postDate)) {
             dateTracker.set(postDate, 0);
@@ -216,11 +230,9 @@ async function insertIndexes(dateTracker, dateStrings, startingIndex) {
     const insertedResult = [];
     let rollingIndex = startingIndex;
 
-    console.log(`${dateTracker.toString()}  ${dateStrings.length}  ${startingIndex}`)
-
     if (dateStrings.length === 0) {
         console.log(new Date())
-        const date = utility.trimTimeFromDate(new Date());
+        const date = utility.trimMinuteFromDate(new Date());
         try {
             console.log(new Date(date));
             const result = await Index.createIndex(startingIndex, date);
