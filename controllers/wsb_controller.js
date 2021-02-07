@@ -121,7 +121,7 @@ async function gainLoss(interval = 'week') {
     const dates = generateCurrentPastDate(interval);
     const current_posts = await Post.findGainLossByDate(dates.current_start_date, dates.current_end_date);
     const past_posts = await Post.findGainLossByDate(dates.previous_start_date, dates.previous_end_date);
-    const all_posts = current_posts.concat(past_posts);
+    const all_posts = past_posts.concat(current_posts);
     const summary = gainLossSummary(current_posts, past_posts);
 
     return {
@@ -138,7 +138,7 @@ exports.historicalIndex = async function (interval = 'week') {
     const dates = generateCurrentPastDate(interval);
     const currentIndexes = await Index.findIndexByDate(dates.current_start_date, dates.current_end_date);
     const pastIndexes = await Index.findIndexByDate(dates.previous_start_date, dates.previous_end_date);
-    const allIndexes = currentIndexes.concat(pastIndexes);
+    const allIndexes = pastIndexes.concat(currentIndexes);
 
     return {
         data_used: allIndexes,
