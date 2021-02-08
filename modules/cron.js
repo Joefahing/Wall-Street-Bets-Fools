@@ -9,7 +9,7 @@ const wsbGetPost = new CronJob('*/30 * * * *', () => {
 
 const wsbAddIndex = new CronJob('2 */1 * * *', () => {
     wsb_controller.addIndex()
-        .then(result => console.log(result))
+        .then(result => console.log(`Added ${result.length} indexes`))
         .catch(error => console.log(`error from addIndex Cron Job ${error}`));
 }, null);
 
