@@ -159,8 +159,8 @@ exports.getIndex = async function () {
     return {
         current_index: currentIndex.points,
         current_date: currentIndex.date_created,
-        base_index: baseIndex.points,
-        base_date: baseIndex.date_created
+        base_index: baseIndex.points || 0,
+        base_date: baseIndex.date_created || new Date(0)
     }
 }
 
