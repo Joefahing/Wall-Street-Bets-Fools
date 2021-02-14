@@ -267,7 +267,7 @@ async function addIndex() {
     const hasRecord = lastRecord !== null
     let last_date = new Date('1970-01-01');
     let last_points = 0;
-    
+
     if (hasRecord) {
         last_date = lastRecord.date_created;
         last_points = lastRecord.points
@@ -275,12 +275,18 @@ async function addIndex() {
     }
 
     const posts = await Post.findGainLossByDate(last_date);
+    console.log(`Here are the gain and loss posts`);
+
     const dateTracker = groupPostByDate(posts);
     const sortedDateStrings = Array.from(dateTracker.keys());
     sortedDateStrings.sort((a, b) => a - b);
 
     try {
         const recordsInserted = await insertIndexes(dateTracker, sortedDateStrings, last_points);
+
+        console.log(`There should at least be one record inserted`);
+        console.log(recordsInserted);
+
         return recordsInserted;
     } catch (err) {
         throw err
