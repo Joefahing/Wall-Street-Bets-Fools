@@ -155,14 +155,14 @@ exports.getIndex = async function () {
     const currentIndex = await Index.findLastIndex();
     const baseIndexes = await Index.findIndexByDate(baseDate, baseDate);
     const baseIndex = baseIndexes[0];
-    console.log(baseDate); 
+    console.log(baseDate);
     console.log(currentIndex);
     console.log(baseIndex)
 
     return {
         current_index: currentIndex.points,
         current_date: currentIndex.date_created,
-        base_index: baseIndex.points !== null ? baseIndex.points :  0,
+        base_index: baseIndex.points !== null ? baseIndex.points : 0,
         base_date: baseIndex.points !== null ? baseIndex.date_created : new Date(0)
     }
 }
@@ -211,7 +211,7 @@ async function topNStockSymbol(period, top = 5) {
 
 //Adding all the Gain and Loss post together down to hour
 function groupPostByDate(posts) {
-    const painAversion = 2;
+    const painAversion = 1;
     const dateTracker = new Map();
 
     for (const post of posts) {
@@ -267,7 +267,7 @@ async function addIndex() {
     const hasRecord = lastRecord !== null
     let last_date = new Date('1970-01-01');
     let last_points = 0;
-
+    
     if (hasRecord) {
         last_date = lastRecord.date_created;
         last_points = lastRecord.points
