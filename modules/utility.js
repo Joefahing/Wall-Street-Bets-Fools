@@ -18,6 +18,10 @@ exports.trimTimeFromDate = function (date = new Date()) {
     return newDate.getTime();
 }
 
+exports.addAditionalHour = function (date = new Date()) {
+    date.setHours(date.getHours() + 1);
+}
+
 exports.isInterval = function (interval = 'week') {
     const set = new Set(['week', 'day', 'month']);
 

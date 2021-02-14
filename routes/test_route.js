@@ -33,7 +33,7 @@
 
 // router.post('/index', async (req, res, next) => {
 //     try {
-//         //const removeResult = await wsb_controller.removeIndex();
+//         const removeResult = await wsb_controller.removeIndex();
 //         const result = await wsb_controller.addIndex();
 //         res.send(result);
 
@@ -57,19 +57,19 @@
 
 // router.get('/index', async (req, res, next) => {
 //     const result = await wsb_controller.getIndex();
-//     console.log(result);
+//    // console.log(result);
 //     res.send(result);
 // });
 
 // router.get('/stock/remove', async (req, res) => {
 //     const result = await ftp_controller.removeInvalidSymbols();
-//     console.log(result)
+//     //console.log(result)
 //     res.send(result);
 // })
 
 // router.get('/stockpost/remove', async (req, res) => {
 //     const result = await wsb_controller.removeInvalidStockPost();
-//     console.log(result)
+//    // console.log(result)
 //     res.send(result);
 // })
 

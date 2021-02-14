@@ -155,10 +155,7 @@ exports.getIndex = async function () {
     const currentIndex = await Index.findLastIndex();
     const baseIndexes = await Index.findIndexByDate(baseDate, baseDate);
     const baseIndex = baseIndexes[0];
-    console.log(baseDate);
-    console.log(currentIndex);
-    console.log(baseIndex)
-
+    
     return {
         current_index: currentIndex.points,
         current_date: currentIndex.date_created,
@@ -215,6 +212,7 @@ function groupPostByDate(posts) {
     const dateTracker = new Map();
 
     for (const post of posts) {
+        utility.addAditionalHour(post.date_created);
         const postDate = utility.trimMinuteFromDate(post.date_created);
 
         if (!dateTracker.has(postDate)) {
@@ -232,6 +230,10 @@ function groupPostByDate(posts) {
 async function insertIndexes(dateTracker, dateStrings, startingIndex) {
     const insertedResult = [];
     let rollingIndex = startingIndex;
+
+    // console.log(dateTracker);
+    // console.log(`dateStrings ${dateStrings}`);
+    // console.log(`startingIndex ${startingIndex}`)
 
     if (dateStrings.length === 0) {
         const date = utility.trimMinuteFromDate(new Date());
@@ -275,8 +277,7 @@ async function addIndex() {
     }
 
     const posts = await Post.findGainLossByDate(last_date);
-    console.log(`Here are the gain and loss posts`);
-
+    console.log(posts);
     const dateTracker = groupPostByDate(posts);
     const sortedDateStrings = Array.from(dateTracker.keys());
     sortedDateStrings.sort((a, b) => a - b);
