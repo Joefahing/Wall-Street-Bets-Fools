@@ -155,12 +155,15 @@ exports.getIndex = async function () {
     const currentIndex = await Index.findLastIndex();
     const baseIndexes = await Index.findIndexByDate(baseDate, baseDate);
     const baseIndex = baseIndexes[0];
+    console.log(baseDate); 
+    console.log(currentIndex);
+    console.log(baseIndex)
 
     return {
         current_index: currentIndex.points,
         current_date: currentIndex.date_created,
-        base_index: baseIndex.points || 0,
-        base_date: baseIndex.date_created || new Date(0)
+        base_index: baseIndex.points !== null ? baseIndex.points :  0,
+        base_date: baseIndex.points !== null ? baseIndex.date_created : new Date(0)
     }
 }
 
