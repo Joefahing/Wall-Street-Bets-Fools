@@ -1,16 +1,15 @@
 const express = require('express');
 const cors = require('cors');
 if (process.env.NODE_ENV !== 'PRODUCTION') { require('dotenv').config(); }
-const body_parser = require('body-parser');
 const cron = require('./modules/cron');
 const wsb_router = require('./routes/wsb_route');
 const stock_router = require('./routes/stock_route');
 const post_router = require('./routes/post_route');
-const test_router = require('./routes/test_route');
+//const test_router = require('./routes/test_route');
 
 const app = express();
 
-app.use(body_parser.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: false }));
 app.use(cors());
 app.use('/stats', wsb_router);
 app.use('/stock', stock_router);
