@@ -1,10 +1,10 @@
-# Wall Street Bet For Fools
+# Wall Street Bet Server
 
 Have you ever been on the popular subreddit Wall Street Bets? 
 
-As I spend my time browsing what other people post on this forum, I begin to notice the value of information in some of these posts. How would I be able to transform this information into knowledge that would ultimately help me make money? 
+As I spend my time browsing what other people post on this forum, I begin to notice the value of information in some of these posts. How would I be able to transform this information into knowledge that would ultimately help me make extra income? 
 
-Wall Street Bet For Fools is a REST API created to solve this problem. By using the Reddit API, WSB API categorized each post base on flair and tile, saving each processed post object in the database and returns calculated results.
+Wall Street Bet Server is a REST API created to solve this problem. By using the Reddit API, WSB API categorized each post base on flair and tile, saving each processed post object in the database and returns calculated results.
 
 
 ## Install
